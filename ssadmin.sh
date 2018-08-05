@@ -69,8 +69,9 @@ create_json () {
 }
 
 run_ssserver () {
-    $SSSERVER -qq -c $JSON_FILE 2>/dev/null >/dev/null &
-    echo $! > $SSSERVER_PID 
+    # $SSSERVER -qq -c $JSON_FILE 2>/dev/null >/dev/null &
+    # echo $! > $SSSERVER_PID
+    $SSSERVER -c $JSON_FILE -d start --log-file $TMPDIR/shadowsocks.log --pid-file $SSSERVER_PID
 }
 
 check_ssserver () {
@@ -602,6 +603,11 @@ esac
 if [ "$EUID" -ne 0 ]; then
     echo "必需以root身份运行，请使用sudo等命令"
     exit 1;
+fi
+if [ ! -e /usr/bin/bc ]; then
+    echo "安装bc中...（第一次运行需要安装）"
+    apt-get install bc > /dev/null
+    echo "bc安装完毕"
 fi
 if type $SSSERVER 2>&1 >/dev/null; then
     :
